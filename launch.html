@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sharanya Gardens — Launch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #0a0a0a;
+    }
+
+    /* ── Hero images ── */
+    .hero-img {
+      position: fixed;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center;
+      animation: breathe 40s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    @keyframes breathe {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.06); }
+      70%  { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+
+    #img1 { z-index: 1; }
+    #img2 { z-index: 2; opacity: 0; }
+    #img3 { z-index: 3; opacity: 0; }
+
+    /* ── Overlay gradient ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      background: linear-gradient(
+        to top,
+        rgba(10,6,4,0.88) 0%,
+        rgba(10,6,4,0.45) 45%,
+        rgba(10,6,4,0.15) 100%
+      );
+    }
+
+    /* ── Content ── */
+    .content {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 16vh;
+      text-align: center;
+      gap: 0;
+    }
+
+    .line {
+      line-height: 1.4;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    .line.show {
+      opacity: 1;
+    }
+
+    .l-join.show {
+      transition: opacity 2.4s ease;
+    }
+
+    /* ── Single color system: white at varying opacity ── */
+
+    .l-company img {
+      height: clamp(36px, 5vw, 64px);
+      width: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .l-presents {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(0.6rem, 0.9vw, 0.75rem);
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 1.4rem;
+      margin-top: 8px;
+    }
+
+    .l-project {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: normal;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #C9A84C;
+      margin-bottom: 0;
+      transition: opacity 2.4s ease, letter-spacing 2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .l-project.show {
+      letter-spacing: 0.18em;
+    }
+
+    /* Tagline — italic Playfair, used at end as sign-off */
+    .l-tagline {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(0.85rem, 1.3vw, 1.1rem);
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.03em;
+      margin-top: 0.6rem;
+    }
+
+    /* Divider */
+    .l-divider {
+      width: 0;
+      height: 1px;
+      background: rgba(212,175,55,0.5);
+      margin: 1.6rem auto;
+      transition: width 1.4s ease !important;
+      transform: none !important;
+    }
+    .l-divider.show {
+      width: clamp(60px, 10vw, 120px);
+      opacity: 1;
+    }
+
+    .l-divider-close {
+      width: 0;
+      height: 1px;
+      background: rgba(212,175,55,0.35);
+      margin: 1.4rem auto 0;
+      transition: width 1.4s ease !important;
+      transform: none !important;
+    }
+    .l-divider-close.show {
+      width: clamp(40px, 7vw, 80px);
+      opacity: 1;
+    }
+
+    /* All detail lines — Inter, no italic, white */
+    .l-badge {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(0.65rem, 1vw, 0.75rem);
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 0.5rem;
+    }
+
+    .l-location {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 2rem;
+    }
+
+    .l-date {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1rem, 1.8vw, 1.5rem);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.95);
+      margin-bottom: 0.4rem;
+    }
+
+    .l-time {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(0.75rem, 1.1vw, 0.9rem);
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 0.4rem;
+    }
+
+    .l-lunch {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(0.62rem, 0.9vw, 0.72rem);
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 1.8rem;
+    }
+
+    .l-join {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1rem, 1.6vw, 1.4rem);
+      letter-spacing: 0.04em;
+      color: #C9A84C;
+      margin-top: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <img class="hero-img" id="img1" src="assets/arch1111.png" alt="" />
+  <img class="hero-img" id="img2" src="assets/arch2222.png" alt="" />
+  <img class="hero-img" id="img3" src="assets/arch3333.png" alt="" />
+
+  <svg id="launch-birds" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+    style="position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;"></svg>
+
+  <div class="overlay"></div>
+
+  <div class="content">
+    <div class="line l-company"><img src="assets/kgs_logo_nobg.png" alt="KGS Infra Projects" /></div>
+    <div class="line l-presents">presents</div>
+    <div class="line l-project">Sharanya Gardens</div>
+    <div class="line l-tagline">Land of Promise. Life of Peace.</div>
+    <div class="line l-divider"></div>
+    <div class="line l-badge">KUDA Approved Plots</div>
+    <div class="line l-location">Nuthanapalle, Kurnool</div>
+    <div class="line l-date">Sunday, 5th July 2026</div>
+    <div class="line l-time">10:00 AM</div>
+    <div class="line l-lunch">Lunch Follows</div>
+    <div class="line l-join">Join us for the grand launch</div>
+    <div class="line l-divider-close"></div>
+  </div>
+
+  <script>
+    // ── Hero crossfade: day → twilight → night, then hold ──
+    const imgs = [
+      document.getElementById('img1'),
+      document.getElementById('img2'),
+      document.getElementById('img3'),
+    ];
+    const CROSS = 2800, GAP = 3000;
+
+    function crossfadeTo(idx) {
+      if (idx >= imgs.length) return; // stop after night
+      imgs[idx].style.transition = `opacity ${CROSS}ms ease`;
+      imgs[idx].style.opacity = '1';
+      // fade out previous
+      if (idx > 0) {
+        setTimeout(() => {
+          imgs[idx - 1].style.transition = `opacity ${CROSS}ms ease`;
+          imgs[idx - 1].style.opacity = '0';
+        }, CROSS);
+      }
+      setTimeout(() => crossfadeTo(idx + 1), GAP + CROSS);
+    }
+    setTimeout(() => crossfadeTo(1), GAP);
+
+    // ── Birds — one pass during twilight crossfade ──
+    (function initBirds() {
+      const svg = document.getElementById('launch-birds');
+
+      function makeFlapPath(s, vy) {
+        return `M0,0 Q${-10*s},${-vy*s} ${-18*s},0 M0,0 Q${10*s},${-vy*s} ${18*s},0`;
+      }
+
+      const BIRD_COUNT = 5;
+      const birds = [];
+      let lastTime = null;
+      let allDone = false;
+      let rafId = null;
+
+      for (let i = 0; i < BIRD_COUNT; i++) {
+        const g    = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const scale = 0.7 + Math.random() * 0.7;
+
+        path.setAttribute('d', makeFlapPath(scale, 4));
+        path.setAttribute('stroke', 'rgba(0,0,0,0.6)');
+        path.setAttribute('stroke-width', '1.8');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke-linecap', 'round');
+        g.appendChild(path);
+        svg.appendChild(g);
+
+        birds.push({
+          el: g, path, scale,
+          x: -8 - Math.random() * 15,
+          y: 8  + Math.random() * 32,
+          speed: 0.012 + Math.random() * 0.01,
+          amplitude: 1.2 + Math.random() * 1.8,
+          frequency: 0.0007 + Math.random() * 0.0005,
+          phase: Math.random() * Math.PI * 2,
+          wingSpeed: 0.006 + Math.random() * 0.004,
+          wingPhase: Math.random() * Math.PI * 2,
+          done: false,
+        });
+      }
+
+      function tick(t) {
+        if (!lastTime) lastTime = t;
+        const dt = Math.min(t - lastTime, 32);
+        lastTime = t;
+        let activeBirds = 0;
+        birds.forEach(bird => {
+          if (bird.done) return;
+          bird.x += bird.speed * dt;
+          if (bird.x > 108) {
+            bird.el.setAttribute('visibility', 'hidden');
+            bird.done = true;
+            return;
+          }
+          activeBirds++;
+          const yWaver = Math.sin(t * bird.frequency + bird.phase) * bird.amplitude;
+          const px = bird.x / 100 * svg.clientWidth;
+          const py = (bird.y + yWaver) / 100 * svg.clientHeight;
+          bird.el.setAttribute('transform', `translate(${px},${py}) rotate(${yWaver * 1.8})`);
+          const vy = 4 + Math.sin(t * bird.wingSpeed + bird.wingPhase) * 3.5;
+          bird.path.setAttribute('d', makeFlapPath(bird.scale, vy));
+        });
+        if (activeBirds === 0 && !allDone) {
+          allDone = true;
+          cancelAnimationFrame(rafId);
+          return;
+        }
+        rafId = requestAnimationFrame(tick);
+      }
+
+      // Launch birds at start of twilight crossfade
+      setTimeout(() => { rafId = requestAnimationFrame(tick); }, GAP);
+    })();
+
+    // ── Text reveal + zoom-out settle ──
+    // day(GAP) → crossfade(CROSS) → twilight(GAP) → crossfade(CROSS) → night fully visible
+    const TEXT_START = GAP + CROSS + GAP + CROSS + 800; // +800 settle time
+    const lines = document.querySelectorAll('.line');
+    const LINE_STAGGER = 650;
+    const LAST_FADE = 2400; // l-join fade duration (slowest line)
+    // Total time from first line appearing to last line fully visible
+    const totalTextDuration = (lines.length - 1) * LINE_STAGGER + LAST_FADE;
+
+    lines.forEach((line, i) => {
+      setTimeout(() => line.classList.add('show'), TEXT_START + i * LINE_STAGGER);
+    });
+
+    // Zoom-out starts 2s after first text line, ends when last text line finishes
+    const ZOOM_START_OFFSET = 2000; // 2s after text begins — a few lines already visible
+    const zoomDuration = totalTextDuration - ZOOM_START_OFFSET;
+
+    setTimeout(() => {
+      const img3 = document.getElementById('img3');
+      const matrix = new DOMMatrix(getComputedStyle(img3).transform);
+      const currentScale = matrix.a;
+      img3.style.animation = 'none';
+      img3.style.transform = `scale(${currentScale})`;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        img3.style.transition = `transform ${zoomDuration}ms linear`;
+        img3.style.transform = 'scale(1.0)';
+      }));
+    }, TEXT_START + ZOOM_START_OFFSET);
+  </script>
+</body>
+</html>

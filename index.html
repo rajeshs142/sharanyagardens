@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sharanya Gardens — KGS Infra Projects</title>
+  <meta name="description" content="Premium open plots at Sharanya Gardens, Nandyal. RERA approved, clear title, Vastu compliant. Explore available plots and book yours today." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Lucide icons (CDN) -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+
+  <!-- ── Nav ───────────────────────────────────────────── -->
+  <nav id="nav">
+    <div class="container">
+      <a class="logo" href="#">
+        <img src="assets/kgs_logo_nobg.png" alt="KGS Infra Projects" />
+      </a>
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#layout">Plots</a></li>
+        <li><a href="#amenities">Amenities</a></li>
+        <li><a href="#location">Location</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── Hero ──────────────────────────────────────────── -->
+  <section id="hero">
+    <img id="hero-img-1" class="hero-img" src="assets/arch111.png" alt="Sharanya Gardens entrance — day" />
+    <img id="hero-img-2" class="hero-img" src="assets/arch222.png" alt="Sharanya Gardens entrance — twilight" />
+    <img id="hero-img-3" class="hero-img" src="assets/arch333.png" alt="Sharanya Gardens entrance — night" />
+
+    <div class="hero-overlay"></div>
+
+    <!-- Clouds: visible during transitions only -->
+    <div id="hero-clouds"></div>
+
+
+    <!-- Birds: SVG canvas for animated bird silhouettes -->
+    <svg id="hero-birds" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-el hero-logo">
+          <img src="assets/hero_logo.png" alt="KGS Infra Projects" />
+        </div>
+        <p class="hero-el">Premium open plots nestled in the heart of Nandyal.<br>Clear title. Vastu compliant. Nature all around.</p>
+        <div class="hero-el btn-wrap">
+          <a href="#layout" class="btn btn-primary">Explore Plots</a>
+          <a href="assets/sharanya_garden_broucher.pdf" download class="btn btn-outline">Download Brochure</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+      Scroll
+    </div>
+  </section>
+
+  <!-- ── About ─────────────────────────────────────────── -->
+  <section id="about">
+    <div id="about-leaves" aria-hidden="true"></div>
+    <img id="about-tree" src="assets/kindle_nobg_big2.png" alt="" aria-hidden="true" />
+    <div class="container">
+      <div class="about-text reveal">
+        <p class="section-label">The Project</p>
+        <h2>Where Every Plot Tells a Story</h2>
+        <p>Sharanya Gardens is a thoughtfully planned open plot development in Nandyal, Andhra Pradesh — designed for those who value space, serenity, and sound investment.</p>
+        <p>With wide roads, underground utilities, and lush green parks, every detail has been considered so you can build your dream home without compromise.</p>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-number" id="stat-total">90</span>
+            <span class="stat-label">Total Plots</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number" id="stat-available">—</span>
+            <span class="stat-label">Available</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">RERA</span>
+            <span class="stat-label">Approved</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">Vastu</span>
+            <span class="stat-label">Compliant</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Gallery ──────────────────────────────────────────── -->
+  <section id="gallery">
+    <div class="container reveal">
+      <p class="section-label">The Project</p>
+      <h2>Gallery</h2>
+    </div>
+    <div class="gallery-wrap">
+      <button class="gallery-arrow prev hidden" id="gallery-prev" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="gallery-strip" id="gallery-strip">
+        <!-- Populated by main.js from gallery.csv -->
+      </div>
+      <button class="gallery-arrow next" id="gallery-next" aria-label="Next">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Layout Map ─────────────────────────────────────── -->
+  <section id="layout">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-label">Master Layout</p>
+        <h2>Find Your Plot</h2>
+      </div>
+
+      <div class="map-wrap reveal" id="map-wrap">
+        <img src="assets/layout_map-nobg.png" alt="Sharanya Gardens layout map" id="layout-img" />
+        <svg id="plot-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none"></svg>
+        <div id="plot-tooltip"></div>
+      </div>
+
+      <div class="map-legend reveal">
+        <div class="legend-item">
+          <div class="legend-dot available"></div>
+          <span>Available</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot reserved"></div>
+          <span>Reserved</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot booked"></div>
+          <span>Booked</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Amenities ─────────────────────────────────────── -->
+  <section id="amenities">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-label">What We Offer</p>
+        <h2>Amenities</h2>
+      </div>
+    </div>
+    <div class="amenity-scroll-wrap">
+      <button class="amenity-arrow aprev hidden" id="amenity-prev" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="amenity-strip" id="amenity-strip">
+        <!-- Populated by main.js from amenities.csv -->
+      </div>
+      <button class="amenity-arrow anext" id="amenity-next" aria-label="Next">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+
+  </section>
+
+  <!-- ── Location ──────────────────────────────────────── -->
+  <section id="location">
+    <!-- City bg + road + car -->
+    <div id="location-scene">
+      <div id="location-road">
+        <div id="location-road-line"></div>
+      </div>
+      <!-- cars injected by main.js -->
+      <!-- roadside signpost -->
+      <svg id="location-sign" viewBox="0 0 140 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- pole -->
+        <rect x="66" y="44" width="6" height="86" fill="#666"/>
+        <!-- arrow sign board -->
+        <polygon points="8,8 100,8 128,26 100,44 8,44" fill="#C4622D"/>
+        <polygon points="8,8 100,8 128,26 100,44 8,44" fill="none" stroke="#e8955a" stroke-width="2" opacity="0.5"/>
+        <!-- text -->
+        <text x="62" y="26" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#fff" letter-spacing="1">SHARANYA</text>
+        <text x="62" y="40" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#ffe0cc" letter-spacing="0.5">GARDENS ➜</text>
+      </svg>
+    </div>
+    <div class="container">
+      <div class="reveal">
+        <div class="section-header">
+          <p class="section-label">Where We Are</p>
+          <h2>Location</h2>
+        </div>
+        <div class="location-details">
+          <div class="location-detail">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>Nandyal, Andhra Pradesh</span>
+          </div>
+          <div class="location-detail">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>45 minutes from Nandyal Railway Station</span>
+          </div>
+          <div class="location-detail">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span>Close to schools, hospitals, and markets</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="location-map-link reveal">
+        <a href="https://www.google.com/maps?q=15.768349,78.100897" target="_blank" rel="noopener">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          View on Google Maps
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Brochure ───────────────────────────────────────── -->
+  <section id="brochure">
+    <div class="container reveal">
+      <p class="section-label">Know More</p>
+      <h2>Download Brochure</h2>
+      <p>Get the complete details — plot sizes, pricing, payment plans, and legal documents — all in one place.</p>
+      <a href="assets/sharanya_garden_broucher.pdf" download class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Sharanya Gardens Brochure
+      </a>
+    </div>
+  </section>
+
+  <!-- ── Contact ───────────────────────────────────────── -->
+  <section id="contact">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Get In Touch</p>
+        <h2>Contact Us</h2>
+        <p>Our team is here to help you find the right plot and guide you through the booking process.</p>
+
+        <div class="contact-items">
+          <div class="contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.84a16 16 0 0 0 8.25 8.25l.82-.82a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            <div>
+              <span class="label">Phone</span>
+              <a href="tel:+919999999999" class="value">+91 99999 99999</a>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <div>
+              <span class="label">Email</span>
+              <a href="mailto:info@kgsinfraprojects.com" class="value">info@kgsinfraprojects.com</a>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <div>
+              <span class="label">Office</span>
+              <span class="value">123, Main Road, Nandyal,<br>Andhra Pradesh — 518501</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <img src="assets/kgs_logo_nobg.png" alt="KGS Infra Projects" />
+      <p>&copy; <span id="year"></span> KGS Infra Projects. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

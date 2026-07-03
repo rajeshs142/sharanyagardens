@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Plot Marker Tool — Sharanya Gardens</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: #1a1a1a;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Toolbar ── */
+    #toolbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1.25rem;
+      background: #111;
+      border-bottom: 1px solid #333;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    #toolbar h1 { font-size: 0.95rem; font-weight: 600; color: #fff; }
+
+    label { font-size: 0.8rem; color: #aaa; }
+
+    input[type="text"] {
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background: #222;
+      color: #fff;
+      font-size: 0.85rem;
+      width: 80px;
+    }
+
+    button {
+      padding: 0.4rem 0.9rem;
+      border-radius: 4px;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    button:hover { opacity: 0.85; }
+
+    #btn-close    { background: #e05a3a; color: #fff; }
+    #btn-undo     { background: #555; color: #fff; }
+    #btn-delete   { background: #c0392b; color: #fff; }
+    #btn-export   { background: #2ecc71; color: #111; margin-left: auto; }
+
+    #plot-id-wrap { display: flex; align-items: center; gap: 0.5rem; }
+
+    #status-bar {
+      font-size: 0.78rem;
+      color: #888;
+      padding: 0 1rem;
+    }
+
+    /* ── Main canvas area ── */
+    #main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    #canvas-wrap {
+      flex: 1;
+      overflow: auto;
+      position: relative;
+      cursor: crosshair;
+    }
+
+    #canvas-wrap img {
+      display: block;
+      max-width: none; /* allow zoom */
+    }
+
+    svg#overlay {
+      position: absolute;
+      top: 0; left: 0;
+      pointer-events: none;
+    }
+
+    svg#overlay polygon {
+      fill: rgba(107,180,94,0.3);
+      stroke: #6bb45e;
+      stroke-width: 1.5;
+    }
+
+    svg#overlay polygon.active {
+      fill: rgba(255,200,50,0.35);
+      stroke: #ffc832;
+    }
+
+    svg#overlay polygon.selected {
+      fill: rgba(224,90,58,0.4);
+      stroke: #e05a3a;
+      stroke-width: 2;
+    }
+
+    svg#overlay circle {
+      fill: #fff;
+      stroke: #ffc832;
+      stroke-width: 1.5;
+    }
+
+    svg#overlay line {
+      stroke: rgba(255,200,50,0.6);
+      stroke-width: 1;
+      stroke-dasharray: 4 3;
+    }
+
+    svg#overlay text {
+      font-size: 11px;
+      fill: #fff;
+      pointer-events: none;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+      font-family: system-ui, sans-serif;
+      font-weight: 600;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: 220px;
+      background: #111;
+      border-left: 1px solid #333;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    #sidebar h2 {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #666;
+      padding: 0.75rem 1rem 0.5rem;
+      border-bottom: 1px solid #222;
+    }
+
+    #plot-list { list-style: none; }
+
+    #plot-list li {
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      border-bottom: 1px solid #1e1e1e;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #plot-list li:hover { background: #1a1a1a; }
+    #plot-list li.selected { background: #2a1a10; color: #e05a3a; }
+
+    #plot-list .pts-count { color: #555; font-size: 0.75rem; }
+
+    /* ── CSV preview ── */
+    #csv-preview {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #csv-preview.open { display: flex; }
+
+    #csv-box {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1.5rem;
+      max-width: 700px;
+      width: 90%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    #csv-box h3 { font-size: 0.95rem; color: #fff; }
+
+    #csv-text {
+      flex: 1;
+      overflow-y: auto;
+      background: #000;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 0.75rem;
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: #9ef;
+      white-space: pre;
+      max-height: 50vh;
+    }
+
+    #csv-box .row { display: flex; gap: 0.75rem; justify-content: flex-end; }
+
+    #btn-copy    { background: #3498db; color: #fff; }
+    #btn-dl      { background: #2ecc71; color: #111; }
+    #btn-close-p { background: #555; color: #fff; }
+  </style>
+</head>
+<body>
+
+<div id="toolbar">
+  <h1>Plot Marker Tool</h1>
+
+  <div id="plot-id-wrap">
+    <label for="plot-id">Plot #</label>
+    <input type="text" id="plot-id" value="1" placeholder="e.g. A1" />
+  </div>
+
+  <button id="btn-close">Close Polygon</button>
+  <button id="btn-undo">Undo Point</button>
+  <button id="btn-delete">Delete Selected</button>
+
+  <span id="status-bar">Open the layout map image to begin.</span>
+
+  <button id="btn-export">Export CSV</button>
+</div>
+
+<div id="main">
+  <div id="canvas-wrap">
+    <!-- Image + SVG injected by JS -->
+  </div>
+
+  <div id="sidebar">
+    <h2>Plots (<span id="plot-count">0</span>)</h2>
+    <ul id="plot-list"></ul>
+  </div>
+</div>
+
+<!-- CSV preview modal -->
+<div id="csv-preview">
+  <div id="csv-box">
+    <h3>plots.csv — copy this into <code>data/plots.csv</code></h3>
+    <div id="csv-text"></div>
+    <div class="row">
+      <button id="btn-copy">Copy</button>
+      <button id="btn-dl">Download</button>
+      <button id="btn-close-p">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const wrap    = document.getElementById('canvas-wrap');
+  const sidebar = document.getElementById('sidebar');
+  const statusBar = document.getElementById('status-bar');
+  const plotList  = document.getElementById('plot-list');
+  const plotCount = document.getElementById('plot-count');
+  const plotIdInput = document.getElementById('plot-id');
+
+  let img = null;
+  let svgEl = null;
+  let scale = 1;           // display scale (for zoom later)
+  let currentPoints = [];  // points being drawn
+  let plots = [];          // { id, points: [{x,y}] }
+  let selectedIndex = -1;
+  let activeLine = null;   // preview line
+  let activeCircles = [];
+
+  /* ── Load image via file drag or input ── */
+  wrap.addEventListener('dragover', e => e.preventDefault());
+  wrap.addEventListener('drop', e => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadImage(file);
+  });
+
+  // Auto-load layout_map.jpeg from parent assets folder
+  async function tryAutoLoad() {
+    try {
+      const res = await fetch('../assets/layout_map.jpeg');
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      loadImage(blob, 'layout_map.jpeg');
+    } catch {
+      wrap.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#555;flex-direction:column;gap:1rem;padding:2rem;text-align:center;">
+          <p style="font-size:1.1rem;">Drag &amp; drop <strong>layout_map.jpeg</strong> here</p>
+          <p style="font-size:0.85rem;">Or place this tool in the <code>tools/</code> folder and it will load automatically.</p>
+        </div>`;
+    }
+  }
+
+  function loadImage(fileOrBlob, name) {
+    const url = URL.createObjectURL(fileOrBlob);
+    wrap.innerHTML = '';
+
+    img = document.createElement('img');
+    img.src = url;
+    img.style.display = 'block';
+    wrap.appendChild(img);
+
+    img.onload = () => {
+      svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svgEl.id = 'overlay';
+      svgEl.style.width  = img.naturalWidth  + 'px';
+      svgEl.style.height = img.naturalHeight + 'px';
+      svgEl.setAttribute('viewBox', `0 0 ${img.naturalWidth} ${img.naturalHeight}`);
+      img.style.width  = img.naturalWidth  + 'px';
+      img.style.height = img.naturalHeight + 'px';
+      wrap.style.position = 'relative';
+      wrap.appendChild(svgEl);
+      svgEl.style.pointerEvents = 'none';
+      statusBar.textContent = `Image loaded (${img.naturalWidth}×${img.naturalHeight}). Enter Plot # and click to place points.`;
+      redraw();
+    };
+  }
+
+  /* ── Click to add point ── */
+  wrap.addEventListener('click', e => {
+    if (!svgEl) return;
+    if (e.target.closest('polygon')) return; // clicking existing — handled separately
+
+    const rect = svgEl.getBoundingClientRect();
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
+    currentPoints.push({ x, y });
+    statusBar.textContent = `Plot ${plotIdInput.value}: ${currentPoints.length} point(s). Close polygon when done.`;
+    redraw();
+  });
+
+  /* ── Mouse move: preview line ── */
+  wrap.addEventListener('mousemove', e => {
+    if (!svgEl || currentPoints.length === 0) return;
+    const rect = svgEl.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const last = currentPoints[currentPoints.length - 1];
+    drawPreviewLine(last.x, last.y, mx, my);
+  });
+
+  function drawPreviewLine(x1, y1, x2, y2) {
+    if (activeLine) activeLine.remove();
+    activeLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    activeLine.setAttribute('x1', x1); activeLine.setAttribute('y1', y1);
+    activeLine.setAttribute('x2', x2); activeLine.setAttribute('y2', y2);
+    svgEl.appendChild(activeLine);
+  }
+
+  /* ── Close polygon ── */
+  document.getElementById('btn-close').addEventListener('click', closePoly);
+
+  function closePoly() {
+    if (currentPoints.length < 3) {
+      statusBar.textContent = 'Need at least 3 points to close a polygon.';
+      return;
+    }
+    const id = plotIdInput.value.trim();
+    if (!id) { statusBar.textContent = 'Enter a Plot # first.'; return; }
+    if (plots.find(p => p.id === id)) {
+      statusBar.textContent = `Plot ${id} already exists. Use a different number.`;
+      return;
+    }
+    plots.push({ id, points: [...currentPoints] });
+    currentPoints = [];
+    if (activeLine) { activeLine.remove(); activeLine = null; }
+
+    // Auto-increment numeric plot IDs
+    const num = parseInt(id);
+    if (!isNaN(num)) plotIdInput.value = String(num + 1);
+
+    statusBar.textContent = `Plot ${id} saved. ${plots.length} total.`;
+    redraw();
+    refreshSidebar();
+  }
+
+  /* ── Undo last point ── */
+  document.getElementById('btn-undo').addEventListener('click', () => {
+    currentPoints.pop();
+    redraw();
+  });
+
+  /* ── Delete selected plot ── */
+  document.getElementById('btn-delete').addEventListener('click', () => {
+    if (selectedIndex < 0) { statusBar.textContent = 'Click a plot in the list to select it first.'; return; }
+    const id = plots[selectedIndex].id;
+    plots.splice(selectedIndex, 1);
+    selectedIndex = -1;
+    statusBar.textContent = `Plot ${id} deleted.`;
+    redraw();
+    refreshSidebar();
+  });
+
+  /* ── Redraw SVG ── */
+  function redraw() {
+    if (!svgEl) return;
+    svgEl.innerHTML = '';
+
+    // Saved plots
+    plots.forEach(({ id, points }, i) => {
+      const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      poly.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(' '));
+      poly.classList.toggle('selected', i === selectedIndex);
+      poly.style.pointerEvents = 'all';
+      poly.addEventListener('click', e => {
+        e.stopPropagation();
+        selectedIndex = i;
+        plotIdInput.value = id;
+        redraw();
+        refreshSidebar();
+      });
+      svgEl.appendChild(poly);
+
+      // Label at centroid
+      const cx = Math.round(points.reduce((s,p) => s+p.x,0) / points.length);
+      const cy = Math.round(points.reduce((s,p) => s+p.y,0) / points.length);
+      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      txt.setAttribute('x', cx); txt.setAttribute('y', cy + 4);
+      txt.setAttribute('text-anchor', 'middle');
+      txt.textContent = id;
+      svgEl.appendChild(txt);
+    });
+
+    // In-progress points
+    currentPoints.forEach(({ x, y }) => {
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', 4);
+      svgEl.appendChild(c);
+    });
+
+    // In-progress polygon preview
+    if (currentPoints.length >= 2) {
+      const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      poly.setAttribute('points', currentPoints.map(p => `${p.x},${p.y}`).join(' '));
+      poly.classList.add('active');
+      svgEl.insertBefore(poly, svgEl.firstChild);
+    }
+
+    plotCount.textContent = plots.length;
+  }
+
+  /* ── Sidebar list ── */
+  function refreshSidebar() {
+    plotList.innerHTML = plots.map(({ id, points }, i) => `
+      <li class="${i === selectedIndex ? 'selected' : ''}" data-i="${i}">
+        <span>Plot ${id}</span>
+        <span class="pts-count">${points.length} pts</span>
+      </li>`).join('');
+
+    plotList.querySelectorAll('li').forEach(li => {
+      li.addEventListener('click', () => {
+        selectedIndex = parseInt(li.dataset.i);
+        plotIdInput.value = plots[selectedIndex].id;
+        redraw();
+        refreshSidebar();
+      });
+    });
+  }
+
+  /* ── Export CSV ── */
+  document.getElementById('btn-export').addEventListener('click', () => {
+    if (!plots.length) { statusBar.textContent = 'No plots to export.'; return; }
+    const csv = buildCSV();
+    document.getElementById('csv-text').textContent = csv;
+    document.getElementById('csv-preview').classList.add('open');
+  });
+
+  function buildCSV() {
+    const rows = ['plot_number,points'];
+    plots.forEach(({ id, points }) => {
+      const pts = points.map(p => `${p.x},${p.y}`).join(' ');
+      rows.push(`${id},"${pts}"`);
+    });
+    return rows.join('\n');
+  }
+
+  document.getElementById('btn-copy').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('csv-text').textContent);
+    document.getElementById('btn-copy').textContent = 'Copied!';
+    setTimeout(() => document.getElementById('btn-copy').textContent = 'Copy', 1500);
+  });
+
+  document.getElementById('btn-dl').addEventListener('click', () => {
+    const blob = new Blob([buildCSV()], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'plots.csv';
+    a.click();
+  });
+
+  document.getElementById('btn-close-p').addEventListener('click', () => {
+    document.getElementById('csv-preview').classList.remove('open');
+  });
+
+  /* ── Keyboard shortcuts ── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') closePoly();
+    if (e.key === 'Escape') { currentPoints = []; if (activeLine) activeLine.remove(); redraw(); }
+    if ((e.key === 'z') && (e.ctrlKey || e.metaKey)) { currentPoints.pop(); redraw(); }
+  });
+
+  tryAutoLoad();
+</script>
+</body>
+</html>
