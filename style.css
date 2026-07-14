@@ -464,6 +464,14 @@ section:nth-child(even) {
   text-transform: uppercase;
 }
 
+.about-dtlp {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  margin-top: 0.25rem;
+  margin-bottom: 0 !important;
+}
+
 
 /* ── Layout Map ─────────────────────────────────────────── */
 #layout {

@@ -11,6 +11,7 @@ const ICON_MAP = {
   shield: 'shield', droplets: 'droplets', zap: 'zap',
   trees: 'trees', road: 'arrow-right', landmark: 'landmark',
   waves: 'waves', 'map-pin': 'map-pin', sun: 'sun', phone: 'phone',
+  home: 'home',
 };
 
 /* ── Birds ───────────────────────────────────────────────── */
