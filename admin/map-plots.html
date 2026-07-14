@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plot Mapper — Sharanya Gardens</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, sans-serif;
+    background: #111;
+    color: #eee;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── Top toolbar ── */
+  #toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  #toolbar h1 { font-size: 0.95rem; font-weight: 600; color: #C9A84C; margin-right: 6px; }
+
+  .sep { width: 1px; height: 24px; background: #444; }
+
+  label { font-size: 0.8rem; color: #aaa; }
+
+  input[type="text"], input[type="number"] {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    width: 80px;
+  }
+
+  button {
+    padding: 5px 13px;
+    border-radius: 4px;
+    border: none;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  #btn-undo   { background: #333; color: #eee; }
+  #btn-cancel { background: #5a2020; color: #f88; }
+  #btn-save   { background: #C9A84C; color: #111; }
+  #btn-export { background: #2a6b3a; color: #9ef; }
+  #btn-load   { background: #2a3a6b; color: #9cf; }
+
+  button:hover { opacity: 0.85; }
+  button:disabled { opacity: 0.35; cursor: default; }
+
+  #status {
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: #aaa;
+    white-space: nowrap;
+  }
+
+  /* ── Main area ── */
+  #main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Canvas area ── */
+  #canvas-wrap {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    cursor: crosshair;
+    background: #222;
+  }
+
+  #canvas-wrap.pan-mode { cursor: grab; }
+  #canvas-wrap.pan-mode:active { cursor: grabbing; }
+
+  canvas { position: absolute; top: 0; left: 0; }
+
+  /* ── Sidebar ── */
+  #sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: #1a1a1a;
+    border-left: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #sidebar h2 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #888;
+    padding: 10px 12px 6px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+
+  #plot-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 0;
+  }
+
+  .plot-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    font-size: 0.82rem;
+    border-bottom: 1px solid #222;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .plot-row:hover { background: #252525; }
+  .plot-row.selected { background: #2a2a1a; }
+
+  .plot-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .plot-num { font-weight: 600; color: #C9A84C; width: 32px; }
+  .plot-pts { color: #777; font-size: 0.75rem; }
+
+  .plot-del {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #664;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0 4px;
+  }
+  .plot-del:hover { color: #f66; }
+
+  #sidebar-footer {
+    padding: 10px 12px;
+    border-top: 1px solid #2a2a2a;
+    font-size: 0.78rem;
+    color: #666;
+  }
+
+  /* ── Instructions overlay ── */
+  #instructions {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(0,0,0,0.72);
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: #ccc;
+    pointer-events: none;
+    max-width: 300px;
+  }
+  #instructions b { color: #C9A84C; }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <h1>Plot Mapper</h1>
+  <div class="sep"></div>
+  <label>Plot #</label>
+  <input type="text" id="plot-num" placeholder="e.g. 1" />
+  <label>Sqft</label>
+  <input type="number" id="plot-sqft" placeholder="e.g. 200" style="width:70px"/>
+  <div class="sep"></div>
+  <button id="btn-undo">↩ Undo point</button>
+  <button id="btn-cancel">✕ Cancel plot</button>
+  <button id="btn-save">✔ Save plot</button>
+  <div class="sep"></div>
+  <button id="btn-load">📂 Load CSV</button>
+  <button id="btn-export">⬇ Export CSV</button>
+  <input type="file" id="file-input" accept=".csv" style="display:none"/>
+  <span id="status">0 plots mapped</span>
+</div>
+
+<div id="main">
+  <div id="canvas-wrap">
+    <canvas id="canvas"></canvas>
+    <div id="instructions">
+      <b>Click</b> corners of a plot to draw its polygon<br/>
+      <b>Enter</b> or <b>Save</b> to finish current plot<br/>
+      <b>Scroll</b> to zoom · <b>Middle-click drag</b> to pan<br/>
+      <b>Right-click</b> to cancel current plot<br/>
+      Set Plot # before clicking
+    </div>
+  </div>
+
+  <div id="sidebar">
+    <h2>Mapped Plots (<span id="count">0</span>)</h2>
+    <div id="plot-list"></div>
+    <div id="sidebar-footer">Click a plot row to highlight it</div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────
+const IMG_SRC = '../assets/layout.png';
+const canvas  = document.getElementById('canvas');
+const ctx     = canvas.getContext('2d');
+const wrap    = document.getElementById('canvas-wrap');
+
+let img       = null;
+let scale     = 1;
+let offsetX   = 0, offsetY = 0;
+
+// current polygon being drawn
+let current   = [];   // [{x,y} in image coords]
+
+// saved plots: [{num, sqft, points:[{x,y}]}]
+let plots     = [];
+let selected  = null;  // index into plots
+
+// pan state
+let isPanning = false;
+let panStart  = { x: 0, y: 0 };
+let panOffset = { x: 0, y: 0 };
+
+// ── Load image ─────────────────────────────────────────────
+const image = new Image();
+image.onload = () => {
+  img = image;
+  fitImage();
+  render();
+};
+image.src = IMG_SRC;
+
+function fitImage() {
+  const ww = wrap.clientWidth, wh = wrap.clientHeight;
+  canvas.width  = ww;
+  canvas.height = wh;
+  const scaleX = ww / img.width;
+  const scaleY = wh / img.height;
+  scale   = Math.min(scaleX, scaleY) * 0.95;
+  offsetX = (ww - img.width  * scale) / 2;
+  offsetY = (wh - img.height * scale) / 2;
+}
+
+// ── Coordinate helpers ─────────────────────────────────────
+function toCanvas(ix, iy) {
+  return { x: ix * scale + offsetX, y: iy * scale + offsetY };
+}
+function toImage(cx, cy) {
+  return { x: (cx - offsetX) / scale, y: (cy - offsetY) / scale };
+}
+
+// ── Render ─────────────────────────────────────────────────
+const COLORS = ['#4caf50','#2196f3','#ff9800','#e91e63','#9c27b0',
+                '#00bcd4','#8bc34a','#ffc107','#f44336','#3f51b5'];
+
+function plotColor(i) { return COLORS[i % COLORS.length]; }
+
+function render() {
+  if (!img) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // draw image
+  ctx.drawImage(img, offsetX, offsetY, img.width * scale, img.height * scale);
+
+  // draw saved plots
+  plots.forEach((p, i) => {
+    if (!p.points.length) return;
+    const pts = p.points.map(pt => toCanvas(pt.x, pt.y));
+    const col = plotColor(i);
+    const isSel = selected === i;
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    pts.slice(1).forEach(pt => ctx.lineTo(pt.x, pt.y));
+    ctx.closePath();
+
+    ctx.fillStyle = isSel ? 'rgba(255,255,255,0.25)' : 'rgba(76,175,80,0.18)';
+    ctx.fill();
+    ctx.strokeStyle = isSel ? '#fff' : col;
+    ctx.lineWidth   = isSel ? 2.5 : 1.5;
+    ctx.stroke();
+
+    // label
+    const cx = pts.reduce((s,p)=>s+p.x,0)/pts.length;
+    const cy = pts.reduce((s,p)=>s+p.y,0)/pts.length;
+    ctx.font      = `bold ${Math.max(10, 13*scale)}px system-ui`;
+    ctx.fillStyle = isSel ? '#fff' : col;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(p.num, cx, cy);
+  });
+
+  // draw in-progress polygon
+  if (current.length) {
+    const pts = current.map(pt => toCanvas(pt.x, pt.y));
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    pts.slice(1).forEach(pt => ctx.lineTo(pt.x, pt.y));
+
+    ctx.strokeStyle = '#C9A84C';
+    ctx.lineWidth   = 2;
+    ctx.setLineDash([6,3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // dots on vertices
+    pts.forEach(pt => {
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 5, 0, Math.PI*2);
+      ctx.fillStyle = '#C9A84C';
+      ctx.fill();
+    });
+  }
+}
+
+// ── Canvas events ──────────────────────────────────────────
+wrap.addEventListener('click', e => {
+  if (isPanning) return;
+  const r   = canvas.getBoundingClientRect();
+  const cx  = e.clientX - r.left;
+  const cy  = e.clientY - r.top;
+  const img = toImage(cx, cy);
+  current.push(img);
+  render();
+  updateStatus();
+});
+
+wrap.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  current = [];
+  render();
+});
+
+// Zoom
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r   = canvas.getBoundingClientRect();
+  const mx  = e.clientX - r.left;
+  const my  = e.clientY - r.top;
+  const factor = e.deltaY < 0 ? 1.1 : 0.909;
+  offsetX = mx - (mx - offsetX) * factor;
+  offsetY = my - (my - offsetY) * factor;
+  scale  *= factor;
+  render();
+}, { passive: false });
+
+// Pan with middle mouse or space+drag
+wrap.addEventListener('mousedown', e => {
+  if (e.button === 1 || e.button === 2 && e.altKey) {
+    e.preventDefault();
+    isPanning = true;
+    panStart  = { x: e.clientX, y: e.clientY };
+    panOffset = { x: offsetX, y: offsetY };
+    wrap.classList.add('pan-mode');
+  }
+});
+
+window.addEventListener('mousemove', e => {
+  if (!isPanning) return;
+  const dx = e.clientX - panStart.x;
+  const dy = e.clientY - panStart.y;
+  offsetX  = panOffset.x + dx;
+  offsetY  = panOffset.y + dy;
+  render();
+});
+
+window.addEventListener('mouseup', e => {
+  if (e.button === 1) {
+    isPanning = false;
+    wrap.classList.remove('pan-mode');
+  }
+});
+
+// Keyboard shortcuts
+window.addEventListener('keydown', e => {
+  if (e.key === 'Enter')     savePlot();
+  if (e.key === 'Escape')    { current = []; render(); }
+  if (e.key === 'z' && (e.ctrlKey || e.metaKey)) undoPoint();
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    // advance plot number
+    const n = document.getElementById('plot-num');
+    const v = parseInt(n.value);
+    if (!isNaN(v)) n.value = v + 1;
+  }
+});
+
+// Resize
+window.addEventListener('resize', () => {
+  if (!img) return;
+  canvas.width  = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  render();
+});
+
+// ── Controls ───────────────────────────────────────────────
+document.getElementById('btn-save').addEventListener('click', savePlot);
+document.getElementById('btn-undo').addEventListener('click', undoPoint);
+document.getElementById('btn-cancel').addEventListener('click', () => { current = []; render(); });
+document.getElementById('btn-export').addEventListener('click', exportCSV);
+document.getElementById('btn-load').addEventListener('click', () => document.getElementById('file-input').click());
+document.getElementById('file-input').addEventListener('change', loadCSV);
+
+function undoPoint() {
+  current.pop();
+  render();
+}
+
+function savePlot() {
+  if (current.length < 3) { alert('Need at least 3 points to define a plot.'); return; }
+  const num  = document.getElementById('plot-num').value.trim();
+  const sqft = document.getElementById('plot-sqft').value.trim();
+  if (!num) { alert('Enter a plot number first.'); document.getElementById('plot-num').focus(); return; }
+
+  // remove existing plot with same number
+  plots = plots.filter(p => p.num !== num);
+
+  plots.push({ num, sqft: sqft || '', points: [...current] });
+  plots.sort((a,b) => {
+    const na = parseInt(a.num), nb = parseInt(b.num);
+    if (!isNaN(na) && !isNaN(nb)) return na - nb;
+    return a.num.localeCompare(b.num);
+  });
+
+  current = [];
+
+  // auto-advance plot number
+  const nEl = document.getElementById('plot-num');
+  const v   = parseInt(nEl.value);
+  if (!isNaN(v)) nEl.value = v + 1;
+
+  renderSidebar();
+  render();
+  updateStatus();
+}
+
+function renderSidebar() {
+  const list  = document.getElementById('plot-list');
+  const count = document.getElementById('count');
+  count.textContent = plots.length;
+  list.innerHTML = plots.map((p, i) => `
+    <div class="plot-row${selected===i?' selected':''}" data-i="${i}">
+      <span class="plot-dot" style="background:${plotColor(i)}"></span>
+      <span class="plot-num">${p.num}</span>
+      <span class="plot-pts">${p.points.length} pts${p.sqft?' · '+p.sqft+' sqft':''}</span>
+      <button class="plot-del" data-i="${i}" title="Delete">✕</button>
+    </div>`).join('');
+
+  list.querySelectorAll('.plot-row').forEach(row => {
+    row.addEventListener('click', e => {
+      if (e.target.classList.contains('plot-del')) return;
+      selected = parseInt(row.dataset.i);
+      // populate fields
+      document.getElementById('plot-num').value  = plots[selected].num;
+      document.getElementById('plot-sqft').value = plots[selected].sqft;
+      renderSidebar();
+      render();
+    });
+  });
+
+  list.querySelectorAll('.plot-del').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const i = parseInt(btn.dataset.i);
+      plots.splice(i, 1);
+      if (selected >= plots.length) selected = null;
+      renderSidebar();
+      render();
+      updateStatus();
+    });
+  });
+}
+
+function updateStatus() {
+  document.getElementById('status').textContent =
+    `${plots.length} plots mapped${current.length ? ` · drawing (${current.length} pts)` : ''}`;
+}
+
+// ── Export CSV ─────────────────────────────────────────────
+function exportCSV() {
+  if (!plots.length) { alert('No plots to export.'); return; }
+  const rows = ['plot_number,sqft,points'];
+  plots.forEach(p => {
+    const pts = p.points.map(pt => `${Math.round(pt.x)},${Math.round(pt.y)}`).join(' ');
+    rows.push(`${p.num},${p.sqft},"${pts}"`);
+  });
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'plots.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Load existing CSV ──────────────────────────────────────
+function loadCSV(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const lines = ev.target.result.trim().split('\n').slice(1);
+    plots = [];
+    lines.forEach(line => {
+      // handle quoted points field
+      const m = line.match(/^([^,]+),([^,]*),?"?([^"]*)"?$/);
+      if (!m) return;
+      const [, num, sqft, ptStr] = m;
+      const pairs = ptStr.trim().split(' ');
+      const points = [];
+      for (let i = 0; i < pairs.length - 1; i += 2) {
+        const x = parseFloat(pairs[i]), y = parseFloat(pairs[i+1]);
+        if (!isNaN(x) && !isNaN(y)) points.push({x, y});
+      }
+      if (points.length >= 3) plots.push({ num: num.trim(), sqft: sqft.trim(), points });
+    });
+    renderSidebar();
+    render();
+    updateStatus();
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+</script>
+</body>
+</html>
