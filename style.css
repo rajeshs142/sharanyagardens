@@ -747,7 +747,9 @@ section:nth-child(even) {
 /* ── Amenity ticker ── */
 #amenities {
   background: #2C1810;
-  padding-bottom: 0;
+  padding-bottom: 3rem;
+  border-bottom: 3px solid rgba(201,168,76,0.6);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
 }
 
 #amenities .section-label {
@@ -913,6 +915,7 @@ section:nth-child(even) {
 #location {
   position: relative;
   overflow: hidden;
+  padding-top: 6rem;
   padding-bottom: 160px;
   min-height: 100vh;
   background: #0d1117 url('assets/buildings3.png') center center / cover no-repeat;
@@ -936,9 +939,16 @@ section:nth-child(even) {
   gap: 1.5rem;
   position: relative;
   z-index: 1;
-  max-width: 520px;
-  margin-left: 0;
+  max-width: 680px;
+  margin-left: auto;
   margin-right: auto;
+  align-items: center;
+  text-align: center;
+}
+
+#location .location-details {
+  text-align: left;
+  width: 100%;
 }
 
 /* stars */
@@ -963,6 +973,11 @@ section:nth-child(even) {
 
 #location .section-header {
   margin-bottom: 2rem;
+  width: 100%;
+}
+
+#location .section-header::after {
+  background: #C9A84C;
 }
 
 #location .section-label {
