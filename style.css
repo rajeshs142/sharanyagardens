@@ -1071,6 +1071,9 @@ section:nth-child(even) {
 #contact .container {
   display: block;
   max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 #contact .section-label { color: rgba(255,255,255,0.5); }
@@ -1082,6 +1085,7 @@ section:nth-child(even) {
   flex-direction: column;
   gap: 1.5rem;
   margin-top: 2rem;
+  align-items: center;
 }
 
 .contact-item {
