@@ -681,7 +681,7 @@ section:nth-child(even) {
 
 .gallery-item:hover,
 .gallery-item.is-active {
-  flex: 0 0 max(22vw, calc(var(--item-base, 12vw) * 1.7));
+  flex: 0 0 max(38vw, calc(var(--item-base, 12vw) * 2.8));
 }
 
 .gallery-item:hover img,
@@ -736,7 +736,7 @@ section:nth-child(even) {
   .gallery-strip { height: 260px; }
   .gallery-item  { flex: 0 0 40vw; }
   .gallery-item:hover,
-  .gallery-item.is-active { flex: 0 0 65vw; }
+  .gallery-item.is-active { flex: 0 0 78vw; }
 }
 
 /* ── Amenities ──────────────────────────────────────────── */
@@ -1263,7 +1263,7 @@ footer p { font-size: 0.8rem; }
   .gallery-strip { height: 300px; }
   .gallery-item  { flex: 0 0 48vw; }
   .gallery-item:hover,
-  .gallery-item.is-active { flex: 0 0 72vw; }
+  .gallery-item.is-active { flex: 0 0 82vw; }
 
   /* Location */
   #location {
