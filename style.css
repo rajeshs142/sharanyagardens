@@ -1045,6 +1045,9 @@ section:nth-child(even) {
 
 .contact-item a.value:hover { color: var(--accent); }
 
+.contact-item div { gap: 0.3rem; }
+.contact-item a.value + a.value { opacity: 0.75; }
+
 .contact-map {
   border-radius: var(--radius);
   overflow: hidden;
