@@ -252,6 +252,41 @@ function initNav() {
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  // Hamburger / drawer
+  const btn    = document.getElementById('nav-hamburger');
+  const drawer = document.getElementById('nav-drawer');
+  if (!btn || !drawer) return;
+
+  function openDrawer() {
+    btn.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    btn.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  btn.addEventListener('click', () => {
+    btn.classList.contains('open') ? closeDrawer() : openDrawer();
+  });
+
+  // Close on link tap
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
+
+  // Close on outside tap
+  document.addEventListener('click', e => {
+    if (drawer.classList.contains('open') && !drawer.contains(e.target) && !btn.contains(e.target)) {
+      closeDrawer();
+    }
+  });
 }
 
 /* ── Reveal on scroll ────────────────────────────────────── */
