@@ -1166,6 +1166,9 @@ footer p { font-size: 0.8rem; }
   section { padding: 4rem 0; }
   .container { padding: 0 1.25rem; }
 
+  /* Hero image — anchor to top so arch is always visible */
+  .hero-img { object-position: center top; }
+
   /* Hero — use flex column so content never overflows */
   .hero-content {
     position: absolute;
