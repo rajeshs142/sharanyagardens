@@ -1147,12 +1147,11 @@ footer p { font-size: 0.8rem; }
 @media (max-width: 900px) {
   .stats { grid-template-columns: 1fr 1fr; }
 
-  #about .container { min-height: auto; }
-  #about .about-text { width: 100%; }
-  #about-tree { opacity: 0.15; object-position: center; }
+  #about .container { min-height: auto; justify-content: center; }
+  #about .about-text { width: 100%; max-width: 600px; }
+  #about-tree { opacity: 0.12; object-position: center; }
 
   #location .container { max-width: 100%; }
-
   .location-details { gap: 1rem; }
 }
 
@@ -1162,58 +1161,92 @@ footer p { font-size: 0.8rem; }
   .nav-drawer { display: block; }
 
   section { padding: 4rem 0; }
-
   .container { padding: 0 1.25rem; }
 
-  .hero-content { top: 52%; }
-  .hero-content p { font-size: 0.95rem; }
+  /* Hero — use flex column so content never overflows */
+  .hero-content {
+    position: absolute;
+    top: auto;
+    bottom: 12vh;
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100%;
+    padding: 0 1.5rem;
+  }
+  .hero-content p { font-size: 0.95rem; max-width: 100%; }
+  .hero-logo img { height: clamp(48px, 10vw, 72px); }
 
-  .gallery-strip { height: 320px; }
+  /* Gallery */
+  .gallery-strip { height: 300px; }
   .gallery-item  { flex: 0 0 48vw; }
   .gallery-item:hover,
   .gallery-item.is-active { flex: 0 0 72vw; }
 
+  /* Location */
   #location {
-    padding-bottom: 100px;
     min-height: auto;
     padding-top: 5rem;
-    padding-bottom: 120px;
+    padding-bottom: 100px;
   }
+  #location-road { height: 60px; }
+  #location-sign { left: 4%; width: 90px; bottom: 60px; }
+  .loc-car { width: 60px; }
 
-  #location-sign { left: 4%; width: 100px; }
-
+  /* Amenities */
   .amenity-scroll-wrap { padding: 2rem 0 2.5rem; }
 
+  /* Brochure */
+  #brochure p { font-size: 0.95rem; }
+
+  /* Footer */
   footer .container { flex-direction: column; gap: 1rem; text-align: center; }
 }
 
 @media (max-width: 480px) {
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.6rem; }
-
+  h1 { font-size: 1.9rem; }
+  h2 { font-size: 1.5rem; }
   .container { padding: 0 1rem; }
 
-  .hero-content p { font-size: 0.9rem; }
-  .btn { padding: 0.75rem 1.4rem; font-size: 0.8rem; }
-  .hero-content .btn-wrap { gap: 0.75rem; }
+  /* Hero */
+  .hero-content { bottom: 10vh; padding: 0 1rem; }
+  .hero-content p { font-size: 0.88rem; }
+  .btn { padding: 0.7rem 1.25rem; font-size: 0.8rem; }
+  .hero-content .btn-wrap { gap: 0.6rem; }
+  .hero-scroll { display: none; }
 
-  .gallery-strip { height: 240px; }
-  .gallery-item  { flex: 0 0 60vw; }
+  /* About */
+  #about .about-text { padding: 1.5rem; }
+  .stats { gap: 0.75rem; }
+  .stat { padding: 0.875rem; }
+  .stat-number { font-size: 1.5rem; }
+
+  /* Gallery */
+  .gallery-strip { height: 220px; }
+  .gallery-item  { flex: 0 0 62vw; }
   .gallery-item:hover,
-  .gallery-item.is-active { flex: 0 0 80vw; }
+  .gallery-item.is-active { flex: 0 0 82vw; }
 
-  .stats { grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .stat { padding: 1rem; }
-  .stat-number { font-size: 1.6rem; }
+  /* Layout map */
+  #layout .section-header { margin-bottom: 1.5rem; }
+  .map-legend { gap: 1rem; }
 
+  /* Amenities */
+  .amenity-card-h { padding: 0 1.25rem; }
+  .amenity-icon-h { width: 30px; height: 30px; }
+  .amenity-card-h h3 { font-size: 0.58rem; }
+
+  /* Location */
+  #location { padding-bottom: 80px; }
+  #location-road { height: 50px; }
   #location-sign { display: none; }
-
-  .amenity-card-h { padding: 0 1.5rem; }
-  .amenity-icon-h { width: 32px; height: 32px; }
-  .amenity-card-h h3 { font-size: 0.6rem; }
-
+  .loc-car { width: 50px; }
   .location-detail span { font-size: 0.88rem; }
 
+  /* Contact */
+  #contact .container { padding: 0 1rem; }
+
+  /* Footer */
   footer .container { flex-direction: column; gap: 1rem; text-align: center; }
 }
 
