@@ -6,13 +6,9 @@ const THEME = 'green';
 
 const CONFIG = {
   THEME,
-  // Google Sheets API
-  // Restrict this key in Google Cloud Console:
-  //   - API restrictions: Google Sheets API only
-  //   - Website restrictions: kgsinfraprojects.com/*
-  SHEETS_API_KEY: 'YOUR_API_KEY_HERE',
-  SHEET_ID: 'YOUR_GOOGLE_SHEET_ID_HERE',
-  SHEET_RANGE: 'Sheet1!A:C', // plot_number, status, date
+  // Google Sheets published-as-CSV URL (no API key needed)
+  // File → Share → Publish to web → Sheet1 → CSV
+  SHEETS_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSKHYyXGMViktJ7iWc0C1JL0wRpK3HvyVCJY-Bm0hAQ66Txnc-c4UqyFF7NOd84H0f23KObMnWWtut7/pub?gid=0&single=true&output=csv',
 
   // Google Maps
   MAPS_API_KEY: 'YOUR_MAPS_API_KEY_HERE',

@@ -1062,6 +1062,95 @@ section:nth-child(even) {
   margin-right: auto;
 }
 
+/* ── Plot popup ─────────────────────────────────────────── */
+#plot-popup {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+#plot-popup.open { display: flex; }
+
+.pp-card {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 2rem 2.2rem 1.8rem;
+  max-width: 360px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  text-align: center;
+}
+
+.pp-close {
+  position: absolute;
+  top: 0.75rem; right: 0.9rem;
+  background: none; border: none;
+  font-size: 1.1rem; cursor: pointer;
+  color: var(--text-muted);
+  line-height: 1;
+}
+.pp-close:hover { color: var(--text); }
+
+.pp-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.pp-num {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.pp-sqft {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.pp-status {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.4rem;
+}
+.pp-available { background: rgba(107,143,94,0.15); color: #4a7a3d; }
+.pp-reserved  { background: rgba(196,154,45,0.15); color: #9a7a10; }
+.pp-booked    { background: rgba(196,98,45,0.15);  color: #a04020; }
+
+.pp-cta {
+  display: block;
+  background: #25D366;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: opacity 0.2s;
+}
+.pp-cta:hover { opacity: 0.88; }
+
+.pp-sold-note {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 /* ── Contact ────────────────────────────────────────────── */
 #contact {
   background: var(--contact-bg);

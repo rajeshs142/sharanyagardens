@@ -452,19 +452,25 @@ async function loadPlotMap() {
   let plotsData   = [];  // { plot_number, points }
   let sheetsData  = {};  // { plot_number → { status, date } }
 
-  // 1. Load plots.csv (geometry)
+  // 1. Load plots.csv (geometry) — format: plot_number,sqft,"x1,y1 x2,y2 ..."
   try {
     const res  = await fetch('data/plots.csv');
     const text = await res.text();
-    const rows = text.trim().split('\n').slice(1);
-    plotsData = rows
+    plotsData = text.trim().split('\n').slice(1)
       .filter(r => r.trim())
       .map(row => {
-        const idx  = row.indexOf(',');
-        const num  = row.substring(0, idx).trim();
-        const pts  = row.substring(idx + 1).replace(/"/g, '').trim();
-        return { plot_number: num, points: pts };
-      });
+        // split on first two commas to get num, sqft, then the rest is points (may be quoted)
+        const m = row.match(/^([^,]+),([^,]*),(.+)$/);
+        if (!m) return null;
+        const num   = m[1].trim();
+        const sqft  = m[2].trim();
+        // points field: pairs like "x1,y1 x2,y2" — commas are within the quoted field
+        // stored as "x y x y" space-separated pairs after stripping quotes
+        const raw   = m[3].replace(/"/g, '').trim();
+        // convert "136,301 173,295" → "136,301 173,295" (SVG polygon points format)
+        return { plot_number: num, sqft, points: raw };
+      })
+      .filter(Boolean);
   } catch (e) {
     console.warn('Could not load plots.csv', e);
     return;
@@ -472,14 +478,13 @@ async function loadPlotMap() {
 
   if (!plotsData.length) return;
 
-  // 2. Load booking status from Google Sheets
+  // 2. Load booking status from published Google Sheets CSV
   try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.SHEET_RANGE}?key=${CONFIG.SHEETS_API_KEY}`;
-    const res  = await fetch(url);
-    const json = await res.json();
-    const rows = json.values || [];
-    rows.slice(1).forEach(([num, status, date]) => {
-      if (num) sheetsData[num.trim()] = { status: (status || 'available').toLowerCase().trim(), date };
+    const res  = await fetch(CONFIG.SHEETS_CSV_URL);
+    const text = await res.text();
+    text.trim().split('\n').slice(1).forEach(line => {
+      const [num, status, sqft] = line.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
+      if (num) sheetsData[num] = { status: (status || 'available').toLowerCase(), sqft: sqft || '' };
     });
   } catch (e) {
     console.warn('Could not load Google Sheets data. Showing all as available.', e);
@@ -526,12 +531,50 @@ async function loadPlotMap() {
     });
 
     poly.addEventListener('click', () => {
-      const label = CONFIG.STATUS_LABELS[status] || status;
-      alert(`Plot ${plot_number}\nStatus: ${label}${date ? '\nDate: ' + date : ''}`);
+      showPlotPopup({ plot_number, status, sqft: sheetRow.sqft || '' });
     });
 
     svg.appendChild(poly);
   });
+}
+
+/* ── Plot popup ─────────────────────────────────────────── */
+function showPlotPopup({ plot_number, status, sqft }) {
+  let popup = document.getElementById('plot-popup');
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'plot-popup';
+    document.body.appendChild(popup);
+    popup.addEventListener('click', e => {
+      if (e.target === popup) closePopup();
+    });
+  }
+
+  const label     = CONFIG.STATUS_LABELS[status] || status;
+  const statusCls = status === 'available' ? 'pp-available' : status === 'reserved' ? 'pp-reserved' : 'pp-booked';
+  const phone     = '+919989886806';
+  const msg       = encodeURIComponent(`Hi, I'm interested in Plot No. ${plot_number} at Sharanya Gardens. Please share more details.`);
+
+  popup.innerHTML = `
+    <div class="pp-card">
+      <button class="pp-close" onclick="document.getElementById('plot-popup').classList.remove('open')">✕</button>
+      <p class="pp-label">Plot Details</p>
+      <h3 class="pp-num">Plot No. ${plot_number}</h3>
+      ${sqft ? `<p class="pp-sqft">${sqft} sq.ft</p>` : ''}
+      <div class="pp-status ${statusCls}">${label}</div>
+      ${status === 'available' || status === 'reserved'
+        ? `<a class="pp-cta" href="https://wa.me/${phone}?text=${msg}" target="_blank" rel="noopener">
+             Enquire on WhatsApp
+           </a>`
+        : `<p class="pp-sold-note">This plot has been booked. Contact us for other available plots.</p>`
+      }
+    </div>`;
+  popup.classList.add('open');
+}
+
+function closePopup() {
+  const p = document.getElementById('plot-popup');
+  if (p) p.classList.remove('open');
 }
 
 
