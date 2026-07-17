@@ -889,11 +889,17 @@ section:nth-child(even) {
   gap: 1.5rem;
   position: relative;
   z-index: 1;
-  max-width: 680px;
+  max-width: 620px;
   margin-left: auto;
   margin-right: auto;
   align-items: center;
   text-align: center;
+  background: rgba(8, 16, 24, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 3rem 3.5rem;
 }
 
 #location .location-details {
@@ -931,13 +937,11 @@ section:nth-child(even) {
 }
 
 #location .section-label {
-  color: rgba(232,224,212,0.75);
-  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  color: #C9A84C;
 }
 
 #location h2 {
-  color: #f0e8dc;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+  color: #ffffff;
 }
 
 .location-details {
@@ -955,16 +959,14 @@ section:nth-child(even) {
 
 .location-detail svg {
   width: 20px; height: 20px;
-  color: #f0c87a;
+  color: #C9A84C;
   flex-shrink: 0;
   margin-top: 2px;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));
 }
 
 .location-detail span {
   font-size: 0.95rem;
-  color: #e8e0d4;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+  color: rgba(255,255,255,0.92);
 }
 
 .location-map-link {
@@ -1270,7 +1272,7 @@ footer p { font-size: 0.8rem; }
   #about .about-text { width: 100%; max-width: 600px; }
   #about-tree { opacity: 0.12; object-position: center; }
 
-  #location .container { max-width: 100%; }
+  #location .container { max-width: 100%; padding: 2rem 1.5rem; }
   .location-details { gap: 1rem; }
 }
 
