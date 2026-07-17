@@ -76,7 +76,7 @@ h3 { font-size: 1.2rem; }
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: #C9A84C;
   margin-bottom: 1.1rem;
 }
 
@@ -85,8 +85,8 @@ h3 { font-size: 1.2rem; }
   content: '';
   flex: 0 0 28px;
   height: 1px;
-  background: var(--accent);
-  opacity: 0.4;
+  background: #C9A84C;
+  opacity: 0.5;
 }
 
 /* ── Section heading block ───────────────────────────────── */
@@ -525,6 +525,7 @@ section:nth-child(even) {
 /* ── Layout Map ─────────────────────────────────────────── */
 #layout {
   background: var(--bg-alt);
+  padding-bottom: 0;
 }
 
 #layout .section-header {
@@ -532,7 +533,7 @@ section:nth-child(even) {
 }
 
 #layout .container {
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
 }
 
 .map-wrap {
@@ -626,6 +627,7 @@ section:nth-child(even) {
   gap: 2rem;
   margin-top: 1.5rem;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .legend-item {
@@ -1146,26 +1148,28 @@ section:nth-child(even) {
 
 .contact-item {
   display: flex;
-  gap: 1rem;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
 }
 
 .contact-item svg {
-  width: 20px; height: 20px;
-  color: var(--accent);
+  width: 22px; height: 22px;
+  color: #C9A84C;
   flex-shrink: 0;
-  margin-top: 2px;
 }
 
 .contact-item div {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.2rem;
 }
 
 .contact-item .label {
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.4);
 }
@@ -1173,11 +1177,10 @@ section:nth-child(even) {
 .contact-item .value {
   font-size: 1rem;
   color: var(--white);
+  text-align: center;
 }
 
-.contact-item a.value:hover { color: var(--accent); }
-
-.contact-item div { gap: 0.3rem; }
+.contact-item a.value:hover { color: #C9A84C; }
 .contact-item a.value + a.value { opacity: 0.75; }
 
 .contact-map {
@@ -1387,14 +1390,14 @@ footer p { font-size: 0.8rem; }
   footer .container { flex-direction: column; gap: 1rem; text-align: center; }
 }
 
-/* ── Fade-in on scroll ──────────────────────────────────── */
+/* ── Pop-out on scroll ──────────────────────────────────── */
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: scale(0.94);
+  transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.34, 1.48, 0.64, 1);
 }
 
 .reveal.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: scale(1);
 }
