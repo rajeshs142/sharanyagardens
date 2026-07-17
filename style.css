@@ -538,7 +538,8 @@ section:nth-child(even) {
 
 .map-wrap {
   position: relative;
-  width: 100%;
+  width: 80%;
+  margin: 0 auto;
   user-select: none;
   overflow: hidden;
 }
@@ -664,7 +665,7 @@ section:nth-child(even) {
 /* Scroll track */
 .gallery-strip {
   display: flex;
-  height: 480px;
+  height: 75vh;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
@@ -758,7 +759,7 @@ section:nth-child(even) {
 .gallery-arrow.hidden { opacity: 0; pointer-events: none; }
 
 @media (max-width: 640px) {
-  .gallery-strip { height: 260px; }
+  .gallery-strip { height: 40vh; }
   .gallery-item  { flex: 0 0 40vw; }
   .gallery-item:hover,
   .gallery-item.is-active { flex: 0 0 78vw; }
@@ -1319,7 +1320,7 @@ footer p { font-size: 0.8rem; }
   .hero-logo img { height: clamp(48px, 10vw, 72px); }
 
   /* Gallery */
-  .gallery-strip { height: 300px; }
+  .gallery-strip { height: 55vh; }
   .gallery-item  { flex: 0 0 48vw; }
   .gallery-item:hover,
   .gallery-item.is-active { flex: 0 0 82vw; }
@@ -1363,7 +1364,7 @@ footer p { font-size: 0.8rem; }
   .stat-number { font-size: 1.5rem; }
 
   /* Gallery */
-  .gallery-strip { height: 220px; }
+  .gallery-strip { height: 45vh; }
   .gallery-item  { flex: 0 0 62vw; }
   .gallery-item:hover,
   .gallery-item.is-active { flex: 0 0 82vw; }
