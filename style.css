@@ -528,20 +528,23 @@ section:nth-child(even) {
 }
 
 #layout .section-header {
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+#layout .container {
+  padding-bottom: 1.5rem;
 }
 
 .map-wrap {
   position: relative;
-  display: inline-block;
   width: 100%;
   user-select: none;
+  overflow: hidden;
 }
 
 .map-wrap img {
   width: 100%;
   height: auto;
-  border-radius: var(--radius);
   display: block;
 }
 
@@ -557,27 +560,47 @@ section:nth-child(even) {
   stroke: transparent;
   stroke-width: 1.5;
   cursor: pointer;
-  transition: fill 0.2s, stroke 0.2s;
+  opacity: 0;
+  transition: fill 0.25s, stroke 0.25s, fill-opacity 0.25s, opacity 0.35s ease, transform 0.45s ease;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
+/* drop-in: polygons start shifted up and invisible, animate into place */
+@keyframes plotDrop {
+  from { opacity: 0; transform: translateY(-12px) scale(0.92); }
+  to   { opacity: 1; transform: translateY(0)     scale(1); }
+}
+
+#plot-svg.animate polygon {
+  animation: plotDrop 0.5s ease forwards;
+}
+
+/* stagger delay by nth-child bands so they ripple in */
+#plot-svg.animate polygon:nth-child(5n+1) { animation-delay: 0.0s; }
+#plot-svg.animate polygon:nth-child(5n+2) { animation-delay: 0.06s; }
+#plot-svg.animate polygon:nth-child(5n+3) { animation-delay: 0.12s; }
+#plot-svg.animate polygon:nth-child(5n+4) { animation-delay: 0.18s; }
+#plot-svg.animate polygon:nth-child(5n+5) { animation-delay: 0.24s; }
+
 #plot-svg polygon[data-status="available"] {
-  fill: rgba(107, 143, 94, 0.35);
+  fill: rgba(107, 143, 94, 0.38);
   stroke: #6B8F5E;
 }
 
 #plot-svg polygon[data-status="booked"] {
-  fill: rgba(200, 40, 40, 0.4);
+  fill: rgba(200, 40, 40, 0.42);
   stroke: #c82828;
 }
 
 #plot-svg polygon[data-status="reserved"] {
-  fill: rgba(196, 154, 45, 0.4);
+  fill: rgba(196, 154, 45, 0.42);
   stroke: #C49A2D;
 }
 
 #plot-svg polygon:hover {
-  fill-opacity: 0.65;
-  stroke-width: 2;
+  fill-opacity: 0.7;
+  stroke-width: 2.5;
 }
 
 /* Tooltip */

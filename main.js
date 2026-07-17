@@ -524,6 +524,17 @@ async function loadPlotMap() {
 
     svg.appendChild(poly);
   });
+
+  // Trigger drop-in animation when map scrolls into view
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        svg.classList.add('animate');
+        io.disconnect();
+      }
+    });
+  }, { threshold: 0.15 });
+  io.observe(wrap);
 }
 
 /* ── Plot popup ─────────────────────────────────────────── */
