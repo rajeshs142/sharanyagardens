@@ -522,16 +522,37 @@ async function loadPlotMap() {
       showPlotPopup({ plot_number, status, sqft: sheetRow.sqft || '' });
     });
 
+    // Compute centroid for transform-origin so it expands from plot center
+    const pairs = points.trim().split(/\s+/);
+    let cx = 0, cy = 0;
+    pairs.forEach(pair => {
+      const [x, y] = pair.split(',').map(Number);
+      cx += x; cy += y;
+    });
+    cx /= pairs.length;
+    cy /= pairs.length;
+    poly.style.transformOrigin = `${cx}px ${cy}px`;
+
+    // Start collapsed to a dot
+    poly.style.transform = 'scale(0)';
+    poly.style.opacity   = '0';
+
     svg.appendChild(poly);
   });
 
-  // Trigger drop-in animation when map scrolls into view
+  // When map scrolls into view, expand each polygon from its center
+  const allPolys = Array.from(svg.querySelectorAll('polygon'));
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => {
-      if (e.isIntersecting) {
-        svg.classList.add('animate');
-        io.disconnect();
-      }
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      allPolys.forEach((poly, i) => {
+        setTimeout(() => {
+          poly.style.transition = 'transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.3s ease';
+          poly.style.transform  = 'scale(1)';
+          poly.style.opacity    = '1';
+        }, i * 18);  // 18ms stagger per plot — 99 plots = ~1.8s total ripple
+      });
     });
   }, { threshold: 0.15 });
   io.observe(wrap);
