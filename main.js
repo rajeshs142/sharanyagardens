@@ -319,37 +319,21 @@ async function loadAmenities() {
     const text = await res.text();
     const rows = text.trim().split('\n').slice(1).filter(Boolean);
 
-    const cardHTML = rows.map((row) => {
-      const [icon, name] = row.split(',');
-      return `<div class="amenity-card-h">
+    strip.innerHTML = rows.map((row) => {
+      const parts = row.split(',');
+      const icon  = parts[0].trim();
+      const name  = parts[1].trim();
+      const desc  = parts[2] ? parts[2].trim() : '';
+      return `<div class="amenity-card">
         <div class="amenity-icon-wrap">
-          <div class="amenity-icon-h" data-lucide="${icon.trim()}"></div>
+          <div class="amenity-icon" data-lucide="${icon}"></div>
         </div>
-        <h3>${name.trim()}</h3>
+        <h3>${name}</h3>
+        ${desc ? `<p>${desc}</p>` : ''}
       </div>`;
     }).join('');
 
-    // two identical sets for seamless loop
-    strip.innerHTML = `
-      <div class="amenity-track" id="amenity-track">
-        ${cardHTML}${cardHTML}
-      </div>`;
-
     if (window.lucide) lucide.createIcons();
-
-    // measure one set width, set CSS animation duration proportionally
-    const track = document.getElementById('amenity-track');
-    const totalCards = rows.length;
-    const cardW = 200; // matches CSS flex-basis
-    const gap   = 20;
-    const oneSetW = totalCards * (cardW + gap);
-    track.style.setProperty('--ticker-w', oneSetW + 'px');
-
-    // pause on hover
-    strip.addEventListener('mouseenter', () => track.style.animationPlayState = 'paused');
-    strip.addEventListener('mouseleave', () => track.style.animationPlayState = 'running');
-    strip.addEventListener('touchstart',  () => track.style.animationPlayState = 'paused', { passive: true });
-    strip.addEventListener('touchend',    () => track.style.animationPlayState = 'running', { passive: true });
 
   } catch (e) {
     console.warn('Could not load amenities.csv', e);
