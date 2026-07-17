@@ -468,7 +468,11 @@ async function loadPlotMap() {
     const text = await res.text();
     text.trim().split('\n').slice(1).forEach(line => {
       const [num, status, sqft] = line.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-      if (num) sheetsData[num] = { status: (status || 'available').toLowerCase(), sqft: sqft || '' };
+      if (num) {
+        let s = (status || 'available').toLowerCase().trim();
+        if (s === 'sold') s = 'booked';
+        sheetsData[num] = { status: s, sqft: sqft || '' };
+      }
     });
   } catch (e) {
     console.warn('Could not load Google Sheets data. Showing all as available.', e);
