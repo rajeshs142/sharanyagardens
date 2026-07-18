@@ -478,13 +478,16 @@ async function loadPlotMap() {
     console.warn('Could not load Google Sheets data. Showing all as available.', e);
   }
 
-  // Update available stat
+  // Derive stats from sheet data
+  const totalCount     = plotsData.length;
   const availableCount = plotsData.filter(p => {
     const s = sheetsData[p.plot_number];
     return !s || s.status === 'available';
   }).length;
-  const statEl = document.getElementById('stat-available');
-  if (statEl) statEl.textContent = availableCount;
+  const totalEl = document.getElementById('stat-total');
+  const statEl  = document.getElementById('stat-available');
+  if (totalEl) totalEl.textContent = totalCount;
+  if (statEl)  statEl.textContent  = availableCount;
 
   // 3. Render SVG polygons
   // The points in plots.csv are in the coordinate space of the image natural size.
